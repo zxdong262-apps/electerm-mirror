@@ -8,12 +8,12 @@ GitHub electerm发布包下载镜像加速服务（Cloudflare Worker）。
 
 当你访问：
 ```
-https://electerm-mirror.html5ebta.com/https://github.com/electerm/electerm/releases/download/v1.0.0/electerm-linux-x64.tar.gz
+https://electerm-mirror.html5ebta.com/https://github.com/electerm/electerm/releases/download/v3.6.6/electerm-3.6.6-mac10-x64.dmg.blockmap
 ```
 
 它会重定向到：
 ```
-https://gh-proxy.org/https://github.com/electerm/electerm/releases/download/v1.0.0/electerm-linux-x64.tar.gz
+https://gh-proxy.org/https://github.com/electerm/electerm/releases/download/v3.6.6/electerm-3.6.6-mac10-x64.dmg.blockmap
 ```
 
 ## 功能特点

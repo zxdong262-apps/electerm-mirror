@@ -8,13 +8,12 @@ A Cloudflare Worker service that redirects electerm GitHub release download requ
 
 When you access:
 ```
-https://electerm-mirror.html5ebta.com/https://github.com/electerm/electerm/releases/download/v1.0.0/electerm-linux-x64.tar.gz
+https://electerm-mirror.html5ebta.com/https://github.com/electerm/electerm/releases/download/v3.6.6/electerm-3.6.6-mac10-x64.dmg.blockmap
 ```
 
 It redirects to:
 ```
-https://gh-proxy.org/https://github.com/electerm/electerm/releases/download/v1.0.0/electerm-linux-x64.tar.gz
-```
+https://gh-proxy.org/https://github.com/electerm/electerm/releases/download/v3.6.6/electerm-3.6.6-mac10-x64.dmg.blockmap```
 
 ## Features
 
