@@ -1,0 +1,27 @@
+{
+  "name": "electerm-mirror",
+  "version": "1.0.0",
+  "description": "A mirror service for electerm download",
+  "keywords": [
+    "electerm",
+    "mirror",
+    "download",
+    "accelerate",
+    "cloudflare"
+  ],
+  "homepage": "https://github.com/zxdong262-apps/electerm-mirror#readme",
+  "bugs": {
+    "url": "https://github.com/zxdong262-apps/electerm-mirror/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zxdong262-apps/electerm-mirror.git"
+  },
+  "license": "MIT",
+  "author": "ZHAO Xudong <zxdong@gmail.com>",
+  "type": "module",
+  "main": "src/worker.js",
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
