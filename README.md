@@ -8,7 +8,7 @@ A Cloudflare Worker service that redirects electerm GitHub release download requ
 
 When you access:
 ```
-https://electerm-mirror.html5ebta.com/https://github.com/electerm/electerm/releases/download/v3.6.6/electerm-3.6.6-mac10-x64.dmg.blockmap
+https://electerm-mirror.html5beta.com/https://github.com/electerm/electerm/releases/download/v3.6.6/electerm-3.6.6-mac10-x64.dmg.blockmap
 ```
 
 It redirects to:
