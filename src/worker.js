@@ -1,7 +1,9 @@
 /**
  * electerm-mirror - GitHub release mirror with proxy fallback
  *
- * Redirects /https://github.com/electerm/electerm/releases/download/{*} to a working proxy
+ * Redirects /https://github.com/electerm/{any}/releases/download/{*} to a working proxy
+ * Supports any repository under the electerm organization (e.g. electerm/electerm,
+ * electerm/electerm-web, etc.)
  */
 
 // Proxy list with health check scores (higher = better)
@@ -15,8 +17,10 @@ const PROXIES = [
   // { name: 'mirror.example.com', baseUrl: 'https://mirror.example.com', score: 100 },
 ];
 
-// GitHub release download path pattern
-const GITHUB_DOWNLOAD_PATTERN = '/https://github.com/electerm/electerm/releases/download/';
+// GitHub release download path pattern.
+// Supports any repository under the `electerm` organization:
+//   /https://github.com/electerm/{repo}/releases/download/{tag}/{asset}
+const GITHUB_DOWNLOAD_PATTERN = /^\/https:\/\/github\.com\/electerm\/[^/]+\/releases\/download\//;
 
 /**
  * Check proxy health by making a HEAD request
@@ -204,6 +208,7 @@ function getHomePageHTML() {
 
     <h2>What is electerm-mirror?</h2>
     <p>electerm-mirror is a Cloudflare Worker service that provides reliable, fast downloads for electerm GitHub releases by routing them through working proxies. It's designed to ensure uninterrupted access to electerm releases even in regions with restricted GitHub access.</p>
+    <p>It supports any repository under the <code>electerm</code> organization, such as <code>electerm/electerm</code>, <code>electerm/electerm-web</code>, and so on.</p>
 
     <h2>Features</h2>
     <div class="feature">
@@ -237,6 +242,10 @@ function getHomePageHTML() {
 
     <div class="code-block"><code>Mirror: https://electerm-mirror.html5beta.com/<span class="example">https://github.com/electerm/electerm/releases/download/v3.6.6/electerm-3.6.6-mac.dmg</span></code></div>
 
+    <p>Any repository under the <code>electerm</code> organization is supported. For example, <code>electerm/electerm-web</code> works too:</p>
+
+    <div class="code-block"><code>Mirror: https://electerm-mirror.html5beta.com/<span class="example">https://github.com/electerm/electerm-web/releases/download/v1.0.0/some-asset.zip</span></code></div>
+
     <h2>Supported Proxies</h2>
     <ul>
       <li>gh-proxy.org</li>
@@ -265,8 +274,8 @@ export default {
       });
     }
 
-    // Check if this is a GitHub download request
-    if (!path.startsWith(GITHUB_DOWNLOAD_PATTERN)) {
+    // Check if this is a GitHub download request for any repo under electerm
+    if (!GITHUB_DOWNLOAD_PATTERN.test(path)) {
       // Not a GitHub download request, return 404 or handle differently
       return new Response('Not Found', { status: 404 });
     }

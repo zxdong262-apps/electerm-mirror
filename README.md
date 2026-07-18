@@ -4,6 +4,8 @@
 
 A Cloudflare Worker service that redirects electerm GitHub release download requests to a working proxy.
 
+It supports any repository under the `electerm` organization (e.g. `electerm/electerm`, `electerm/electerm-web`, etc.).
+
 ## How It Works
 
 When you access:
@@ -14,6 +16,16 @@ https://electerm-mirror.html5beta.com/https://github.com/electerm/electerm/relea
 It redirects to:
 ```
 https://gh-proxy.org/https://github.com/electerm/electerm/releases/download/v3.6.6/electerm-3.6.6-mac10-x64.dmg.blockmap```
+
+## Supported URL Pattern
+
+Any GitHub release download URL under the `electerm` organization is supported:
+
+```
+https://electerm-mirror.html5beta.com/https://github.com/electerm/{repo}/releases/download/{tag}/{asset}
+```
+
+For example, `electerm/electerm`, `electerm/electerm-web`, or any other `electerm/*` repo.
 
 ## Features
 

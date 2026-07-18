@@ -4,6 +4,8 @@
 
 GitHub electerm发布包下载镜像加速服务（Cloudflare Worker）。
 
+支持 `electerm` 组织下的任意仓库（如 `electerm/electerm`、`electerm/electerm-web` 等）。
+
 ## 工作原理
 
 当你访问：
@@ -15,6 +17,16 @@ https://electerm-mirror.html5beta.com/https://github.com/electerm/electerm/relea
 ```
 https://gh-proxy.org/https://github.com/electerm/electerm/releases/download/v3.6.6/electerm-3.6.6-mac10-x64.dmg.blockmap
 ```
+
+## 支持的 URL 模式
+
+支持 `electerm` 组织下任意仓库的 GitHub release 下载地址：
+
+```
+https://electerm-mirror.html5beta.com/https://github.com/electerm/{repo}/releases/download/{tag}/{asset}
+```
+
+例如 `electerm/electerm`、`electerm/electerm-web` 或其他任何 `electerm/*` 仓库。
 
 ## 功能特点
 
