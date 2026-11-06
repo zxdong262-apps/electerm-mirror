@@ -2,74 +2,63 @@
 
 [中文说明](./README_CN.md) | English
 
-A Cloudflare Worker service that redirects electerm GitHub release download requests to a working proxy.
+A Cloudflare Worker that mirrors GitHub files for [electerm](https://electerm.org), for regions where `github.com` is hard to reach.
 
-It supports any repository under the `electerm` organization (e.g. `electerm/electerm`, `electerm/electerm-web`, etc.).
+Live at **https://mirror.electerm.org**.
 
 ## How It Works
 
-When you access:
-```
-https://electerm-mirror.html5beta.com/https://github.com/electerm/electerm/releases/download/v3.6.6/electerm-3.6.6-mac10-x64.dmg.blockmap
-```
+Put a GitHub URL after the host; the mirror answers it as itself.
 
-It redirects to:
-```
-https://gh-proxy.org/https://github.com/electerm/electerm/releases/download/v3.6.6/electerm-3.6.6-mac10-x64.dmg.blockmap```
-
-## Supported URL Pattern
-
-Any GitHub release download URL under the `electerm` organization is supported:
+Release assets (redirected to a public proxy, so the big file never passes through the Worker):
 
 ```
-https://electerm-mirror.html5beta.com/https://github.com/electerm/{repo}/releases/download/{tag}/{asset}
+https://mirror.electerm.org/https://github.com/electerm/electerm/releases/download/v3.6.6/electerm-3.6.6-mac10-x64.dmg
 ```
 
-For example, `electerm/electerm`, `electerm/electerm-web`, or any other `electerm/*` repo.
+Source archives, the GitHub API and raw files (streamed back from the edge):
 
-## Features
+```
+https://mirror.electerm.org/https://codeload.github.com/owner/repo/tar.gz/HEAD
+https://mirror.electerm.org/https://api.github.com/repos/electerm/electerm
+https://mirror.electerm.org/https://raw.githubusercontent.com/owner/repo/main/README.md
+```
 
-- **Automatic Proxy Health Check**: Periodically checks proxy availability and response time
-- **Smart Proxy Selection**: Automatically selects the fastest available proxy
-- **Easy to Extend**: Add more proxies in the configuration
+The query string belongs to the target, so `.../contents?ref=dev` reaches GitHub with `?ref=dev`.
 
-## Supported Proxies
+Any repository works, not just `electerm/electerm`: every repo under the `electerm` organization, and any other public repo, since the mirror does not care whose repository it is.
 
-Currently supported proxy: [gh-proxy.org](https://gh-proxy.org)
+## Allowed Hosts
+
+`github.com`, `codeload.github.com`, `api.github.com`, `raw.githubusercontent.com`, `objects.githubusercontent.com`, `release-assets.githubusercontent.com`, `gist.githubusercontent.com`, `atomgit.com`, `raw.atomgit.com`.
+
+Anything else is refused with a 400, so this cannot be used as an open proxy.
+
+## Fallbacks
+
+- **Proxied requests** (archives, API, raw): GitHub directly first, then `gh-proxy.org`, `gh-proxy.com`, `ghfast.top`. A 404 is returned as-is — the repository does not exist, and asking another proxy would only cost a timeout.
+- **Release assets**: 302 to the first proxy in the list. Change `PROXIES` in `src/worker.js` to reorder or add one.
+
+## Used By
+
+`electerm` itself, when GitHub is unreachable:
+
+- **Widget install from a repository** — `src/app/widgets/widget-source.js` tries `codeload.github.com` directly, then this mirror, then `cdn.jsdelivr.net`.
+- **App update download** — the `gh-proxy` mirror option in Settings.
 
 ## Deployment
 
-### Prerequisites
-
-1. Install Wrangler CLI:
 ```bash
-npm install -g wrangler
+npx wrangler deploy
 ```
 
-2. Login to Cloudflare:
-```bash
-wrangler login
-```
-
-3. Set up GitHub Secrets:
-   - `CLOUDFLARE_API_TOKEN`
-   - `CLOUDFLARE_ACCOUNT_ID`
-
-### Manual Deploy
-
-```bash
-wrangler deploy
-```
-
-### GitHub Action
-
-Push to `main` branch to trigger automatic deployment.
+Pushing to `main` also deploys (`.github/workflows/deploy.yml`, needs the `CLOUDFLARE_API_TOKEN` secret). The custom domain `mirror.electerm.org` is attached to the Worker in the Cloudflare dashboard.
 
 ## Project Structure
 
 ```
 ├── src/
-│   └── worker.js      # Main worker code
+│   └── worker.js       # the whole Worker
 ├── wrangler.toml       # Wrangler configuration
 ├── .github/
 │   └── workflows/

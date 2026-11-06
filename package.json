@@ -1,13 +1,15 @@
 {
   "name": "electerm-mirror",
   "version": "1.0.0",
-  "description": "A mirror service for electerm download",
+  "description": "A GitHub mirror for electerm: release assets, source archives and the GitHub API",
   "keywords": [
     "electerm",
+    "github",
     "mirror",
-    "download",
-    "accelerate",
-    "cloudflare"
+    "proxy",
+    "gh-proxy",
+    "cloudflare",
+    "worker"
   ],
   "homepage": "https://github.com/zxdong262-apps/electerm-mirror#readme",
   "bugs": {
