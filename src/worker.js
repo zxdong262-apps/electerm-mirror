@@ -45,11 +45,17 @@ const ALLOWED_HOSTS = new Set([
 // /owner/repo/releases/download/... on github.com
 const RELEASE_PATH = /^\/[^/]+\/[^/]+\/releases\/download\//;
 
-// Headers worth carrying through: range (resumable downloads), the conditional
-// pair (revalidation) and accept (api media types, raw file types).
+// Headers worth carrying through: the conditional pair (revalidation), accept
+// (api media types, raw file types) and user-agent.
+//
+// `range` is deliberately not here. Cloudflare decompresses a subrequest's
+// response by itself, and it does that wrong on a 206: the bytes it hands back
+// are the start of the decompressed stream while `content-range` still counts
+// compressed ones, so a forwarded Range produced a truncated body claiming to
+// be a range. Asked for a whole file the same fetch is correct, and the files
+// that are big enough to want a resume (release assets) are a 302 anyway.
 const FORWARD_HEADERS = [
   'accept',
-  'range',
   'if-none-match',
   'if-modified-since',
   'user-agent',
@@ -89,8 +95,9 @@ function copyRequestHeaders(request) {
       headers.set(name, value);
     }
   }
-  // ask for the bytes as they are: the response is passed through untouched,
-  // so a content-encoding the edge would not keep would break content-length
+  // the edge decides how the subrequest is encoded and decodes it on the way
+  // back, so this asks for the plain bytes; without it an upstream that has a
+  // compressed copy answers with one and the headers no longer describe the body
   headers.set('accept-encoding', 'identity');
   return headers;
 }
@@ -131,6 +138,10 @@ function proxyResponse(upstream) {
   const response = new Response(upstream.body, upstream);
   response.headers.set('access-control-allow-origin', '*');
   response.headers.set('x-electerm-mirror', '1');
+  // a resume is not offered: the body always starts at byte 0 (see
+  // FORWARD_HEADERS), so a client that tries anyway should not be told to
+  response.headers.delete('accept-ranges');
+  response.headers.delete('content-range');
   return response;
 }
 
@@ -257,7 +268,7 @@ export default {
         headers: {
           'access-control-allow-origin': '*',
           'access-control-allow-methods': 'GET, HEAD, OPTIONS',
-          'access-control-allow-headers': 'range, if-none-match, if-modified-since, accept',
+          'access-control-allow-headers': 'if-none-match, if-modified-since, accept',
         },
       });
     }
